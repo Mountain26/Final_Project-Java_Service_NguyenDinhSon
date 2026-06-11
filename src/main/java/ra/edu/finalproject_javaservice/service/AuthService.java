@@ -57,9 +57,7 @@ public class AuthService {
 
     public AuthResponse refresh(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) throw new BadRequestException("Missing refresh token");
-        User user = userRepository.findAll().stream()
-                .filter(u -> refreshToken.equals(u.getRefreshToken()))
-                .findFirst()
+        User user = userRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new BadRequestException("Invalid refresh token"));
         if (!user.isActive()) throw new BadRequestException("Account is inactive");
         String newRefreshToken = jwtService.generateRefreshToken(user);
@@ -75,13 +73,10 @@ public class AuthService {
         String token = bearerToken.substring(7);
         revokeToken(token);
         if (refreshToken != null && !refreshToken.isBlank()) {
-            userRepository.findAll().stream()
-                    .filter(u -> refreshToken.equals(u.getRefreshToken()))
-                    .findFirst()
-                    .ifPresent(u -> {
-                        u.setRefreshToken(null);
-                        userRepository.save(u);
-                    });
+            userRepository.findByRefreshToken(refreshToken).ifPresent(u -> {
+                u.setRefreshToken(null);
+                userRepository.save(u);
+            });
         }
     }
     public AuthResponse changePassword(String username, ChangePasswordRequest request) {

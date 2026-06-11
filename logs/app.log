@@ -1,0 +1,64 @@
+2026-06-11T16:11:16.053+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] .FinalProjectJavaServiceApplicationTests : Starting FinalProjectJavaServiceApplicationTests using Java 17.0.18 with PID 18876 (started by OS in C:\Users\OS\Documents\BTVN Java_Service\FinalProject_Java-Service)
+2026-06-11T16:11:16.055+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] .FinalProjectJavaServiceApplicationTests : No active profile set, falling back to 1 default profile: "default"
+2026-06-11T16:11:17.943+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-11T16:11:18.086+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 121 ms. Found 6 JPA repository interfaces.
+2026-06-11T16:11:19.944+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-11T16:11:20.179+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-06-11T16:11:21.686+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-11T16:11:21.754+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-11T16:11:22.079+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4172c967
+2026-06-11T16:11:22.083+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-11T16:11:22.179+07:00  WARN 18876 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-11T16:11:22.221+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/finalproject_java_service?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: finalproject_java_service/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-11T16:11:24.910+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-11T16:11:25.077+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-11T16:11:25.266+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-11T16:11:26.284+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-06-11T16:11:30.182+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-06-11T16:11:30.432+07:00  INFO 18876 --- [FinalProject_Java-Service] [Test worker] .FinalProjectJavaServiceApplicationTests : Started FinalProjectJavaServiceApplicationTests in 14.73 seconds (process running for 16.642)
+2026-06-11T16:11:36.287+07:00  INFO 18876 --- [FinalProject_Java-Service] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-11T16:11:36.298+07:00  INFO 18876 --- [FinalProject_Java-Service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-11T16:11:36.319+07:00  INFO 18876 --- [FinalProject_Java-Service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-06-11T16:12:13.832+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] .FinalProjectJavaServiceApplicationTests : Starting FinalProjectJavaServiceApplicationTests using Java 17.0.18 with PID 6708 (started by OS in C:\Users\OS\Documents\BTVN Java_Service\FinalProject_Java-Service)
+2026-06-11T16:12:13.834+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] .FinalProjectJavaServiceApplicationTests : No active profile set, falling back to 1 default profile: "default"
+2026-06-11T16:12:14.800+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-11T16:12:14.877+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 66 ms. Found 6 JPA repository interfaces.
+2026-06-11T16:12:15.798+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-11T16:12:15.900+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-06-11T16:12:16.327+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-11T16:12:16.361+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-11T16:12:16.514+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3a8cc099
+2026-06-11T16:12:16.516+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-11T16:12:16.574+07:00  WARN 6708 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-11T16:12:16.590+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/finalproject_java_service?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: finalproject_java_service/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-11T16:12:17.478+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-11T16:12:17.562+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-11T16:12:17.662+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-11T16:12:18.052+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-06-11T16:12:19.657+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-06-11T16:12:19.733+07:00  INFO 6708 --- [FinalProject_Java-Service] [Test worker] .FinalProjectJavaServiceApplicationTests : Started FinalProjectJavaServiceApplicationTests in 6.213 seconds (process running for 9.237)
+2026-06-11T16:12:21.819+07:00  INFO 6708 --- [FinalProject_Java-Service] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-11T16:12:21.819+07:00  INFO 6708 --- [FinalProject_Java-Service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-11T16:12:21.853+07:00  INFO 6708 --- [FinalProject_Java-Service] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

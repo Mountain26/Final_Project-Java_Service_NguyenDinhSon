@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import ra.edu.finalproject_javaservice.dto.CreateUserRequest;
 import ra.edu.finalproject_javaservice.dto.UpdateUserRequest;
 import ra.edu.finalproject_javaservice.dto.UserResponse;
@@ -16,7 +15,6 @@ import ra.edu.finalproject_javaservice.exception.NotFoundException;
 import ra.edu.finalproject_javaservice.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 public class AdminService {
@@ -28,33 +26,35 @@ public class AdminService {
     }
     public Page<UserResponse> users(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Specification<User> spec = (root, query, cb) -> {
-            if (keyword == null || keyword.isBlank()) return cb.conjunction();
-            String like = "%" + keyword.toLowerCase() + "%";
-            var predicates = java.util.List.of(
-                    cb.like(cb.lower(root.get("username")), like),
-                    cb.like(cb.lower(root.get("email")), like)
-            );
+        Page<User> usersPage;
+        if (keyword == null || keyword.isBlank()) {
+            usersPage = userRepository.findAll(pageable);
+        } else {
             try {
                 Role role = Role.valueOf(keyword.toUpperCase());
-                return cb.or(
-                        predicates.get(0),
-                        predicates.get(1),
-                        cb.equal(root.get("role"), role)
-                );
+                usersPage = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrRole(keyword, keyword, role, pageable);
             } catch (IllegalArgumentException ex) {
-                return cb.or(predicates.get(0), predicates.get(1));
+                usersPage = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword, pageable);
             }
-        };
-        Page<User> usersPage = userRepository.findAll(spec, pageable);
+        }
         return usersPage.map(u -> new UserResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRole().name(), u.isActive()));
     }
     public List<UserResponse> users(String keyword) {
-        Stream<User> stream = userRepository.findAll().stream();
-        if (keyword != null && !keyword.isBlank()) {
-            stream = stream.filter(u -> u.getUsername().contains(keyword) || u.getEmail().contains(keyword) || u.getRole().name().contains(keyword.toUpperCase()));
+        return (keyword == null || keyword.isBlank()
+                ? userRepository.findAll()
+                : resolveUsers(keyword))
+                .stream()
+                .map(u -> new UserResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRole().name(), u.isActive()))
+                .toList();
+    }
+
+    private java.util.List<User> resolveUsers(String keyword) {
+        try {
+            Role role = Role.valueOf(keyword.toUpperCase());
+            return userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrRole(keyword, keyword, role);
+        } catch (IllegalArgumentException ex) {
+            return userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword);
         }
-        return stream.map(u -> new UserResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRole().name(), u.isActive())).toList();
     }
     public UserResponse createUser(CreateUserRequest request) {
         if (userRepository.existsByUsername(request.username())) throw new ConflictException("Username already exists");

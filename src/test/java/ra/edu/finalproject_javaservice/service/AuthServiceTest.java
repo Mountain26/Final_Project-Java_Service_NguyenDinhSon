@@ -54,7 +54,7 @@ class AuthServiceTest {
         User user = new User();
         user.setId(1L); user.setUsername("u1"); user.setEmail("u1@mail.com"); user.setRole(Role.STUDENT); user.setActive(true);
         user.setRefreshToken("old");
-        when(userRepository.findAll()).thenReturn(java.util.List.of(user));
+        when(userRepository.findByRefreshToken("old")).thenReturn(Optional.of(user));
         when(jwtService.generateAccessToken(user)).thenReturn("newA");
         when(jwtService.generateRefreshToken(user)).thenReturn("newR");
 

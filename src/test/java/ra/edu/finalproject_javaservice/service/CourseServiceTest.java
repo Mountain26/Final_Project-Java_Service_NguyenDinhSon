@@ -24,7 +24,7 @@ class CourseServiceTest {
     void findAllPaginationWorks() {
         Course course = new Course();
         course.setId(1L); course.setCourseCode("JAVA101"); course.setCourseName("Java"); course.setCredit(3);
-        when(courseRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), any(org.springframework.data.domain.Pageable.class)))
+        when(courseRepository.findAll(any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(course)));
         var page = courseService.findAll(null, 0, 10);
         assertEquals(1, page.getTotalElements());

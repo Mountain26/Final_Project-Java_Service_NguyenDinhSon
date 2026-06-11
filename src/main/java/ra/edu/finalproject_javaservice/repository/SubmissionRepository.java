@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     List<Submission> findByStudent_Id(Long studentId);
+    java.util.Optional<Submission> findByStudent_IdAndCourse_IdAndStatusNot(Long studentId, Long courseId, SubmissionStatus status);
     List<Submission> findByStatus(SubmissionStatus status);
     List<Submission> findByCourse_Id(Long courseId);
 }

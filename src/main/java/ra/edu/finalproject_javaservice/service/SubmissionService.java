@@ -42,9 +42,7 @@ public class SubmissionService {
         if (!enrollmentRepository.existsByStudent_IdAndCourse_Id(student.getId(), courseId)) {
             throw new BadRequestException("Student is not enrolled in this course");
         }
-        Submission submission = submissionRepository.findByStudent_Id(student.getId()).stream()
-                .filter(s -> s.getCourse().getId().equals(courseId) && s.getStatus() != SubmissionStatus.GRADED)
-                .findFirst()
+        Submission submission = submissionRepository.findByStudent_IdAndCourse_IdAndStatusNot(student.getId(), courseId, SubmissionStatus.GRADED)
                 .orElseGet(() -> {
                     Submission s = new Submission();
                     s.setStudent(student);

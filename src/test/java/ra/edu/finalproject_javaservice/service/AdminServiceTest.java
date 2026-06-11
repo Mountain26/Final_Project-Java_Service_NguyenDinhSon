@@ -28,7 +28,7 @@ class AdminServiceTest {
     void usersPaginationWorks() {
         User user = new User();
         user.setId(1L); user.setUsername("u1"); user.setEmail("u1@mail.com"); user.setRole(Role.ADMIN); user.setActive(true);
-        when(userRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), any(org.springframework.data.domain.Pageable.class)))
+        when(userRepository.findAll(any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(user)));
         var page = adminService.users(null, 0, 10);
         assertEquals(1, page.getTotalElements());
