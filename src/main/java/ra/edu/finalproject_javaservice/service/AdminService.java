@@ -3,9 +3,9 @@ package ra.edu.finalproject_javaservice.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import ra.edu.finalproject_javaservice.dto.CreateUserRequest;
 import ra.edu.finalproject_javaservice.dto.UpdateUserRequest;
 import ra.edu.finalproject_javaservice.dto.UserResponse;
@@ -28,17 +28,26 @@ public class AdminService {
     }
     public Page<UserResponse> users(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        List<UserResponse> filtered = userRepository.findAll().stream()
-                .filter(u -> keyword == null || keyword.isBlank()
-                        || u.getUsername().contains(keyword)
-                        || u.getEmail().contains(keyword)
-                        || u.getRole().name().contains(keyword.toUpperCase()))
-                .map(u -> new UserResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRole().name(), u.isActive()))
-                .toList();
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), filtered.size());
-        List<UserResponse> content = start >= filtered.size() ? List.of() : filtered.subList(start, end);
-        return new PageImpl<>(content, pageable, filtered.size());
+        Specification<User> spec = (root, query, cb) -> {
+            if (keyword == null || keyword.isBlank()) return cb.conjunction();
+            String like = "%" + keyword.toLowerCase() + "%";
+            var predicates = java.util.List.of(
+                    cb.like(cb.lower(root.get("username")), like),
+                    cb.like(cb.lower(root.get("email")), like)
+            );
+            try {
+                Role role = Role.valueOf(keyword.toUpperCase());
+                return cb.or(
+                        predicates.get(0),
+                        predicates.get(1),
+                        cb.equal(root.get("role"), role)
+                );
+            } catch (IllegalArgumentException ex) {
+                return cb.or(predicates.get(0), predicates.get(1));
+            }
+        };
+        Page<User> usersPage = userRepository.findAll(spec, pageable);
+        return usersPage.map(u -> new UserResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRole().name(), u.isActive()));
     }
     public List<UserResponse> users(String keyword) {
         Stream<User> stream = userRepository.findAll().stream();

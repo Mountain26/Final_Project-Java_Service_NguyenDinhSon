@@ -24,14 +24,19 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TokenBlacklistRepository tokenBlacklistRepository;
-    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlacklistRepository tokenBlacklistRepository) {
-        this.authenticationManager = authenticationManager; this.userRepository = userRepository; this.passwordEncoder = passwordEncoder; this.jwtService = jwtService; this.tokenBlacklistRepository = tokenBlacklistRepository;
+    private final OtpService otpService;
+    private final MailService mailService;
+    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlacklistRepository tokenBlacklistRepository, OtpService otpService, MailService mailService) {
+        this.authenticationManager = authenticationManager; this.userRepository = userRepository; this.passwordEncoder = passwordEncoder; this.jwtService = jwtService; this.tokenBlacklistRepository = tokenBlacklistRepository; this.otpService = otpService; this.mailService = mailService;
     }
     public AuthResponse login(AuthRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         User user = userRepository.findByUsername(request.username()).orElseThrow();
         if (!user.isActive()) throw new BadRequestException("Account is inactive");
-        return new AuthResponse(jwtService.generateAccessToken(user), jwtService.generateRefreshToken(user), user.getRole().name(), user.getId(), user.getUsername(), user.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(user);
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+        return new AuthResponse(jwtService.generateAccessToken(user), refreshToken, user.getRole().name(), user.getId(), user.getUsername(), user.getEmail());
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -44,19 +49,23 @@ public class AuthService {
         user.setRole(Role.STUDENT);
         user.setActive(true);
         user = userRepository.save(user);
-        return new AuthResponse(jwtService.generateAccessToken(user), jwtService.generateRefreshToken(user), user.getRole().name(), user.getId(), user.getUsername(), user.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(user);
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+        return new AuthResponse(jwtService.generateAccessToken(user), refreshToken, user.getRole().name(), user.getId(), user.getUsername(), user.getEmail());
     }
 
     public AuthResponse refresh(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) throw new BadRequestException("Missing refresh token");
-        if (tokenBlacklistRepository.existsByTokenString(refreshToken)) throw new BadRequestException("Token is revoked");
-        if (!jwtService.isValid(refreshToken)) throw new BadRequestException("Invalid refresh token");
-        if (!"refresh".equals(jwtService.extractTokenType(refreshToken))) throw new BadRequestException("Token is not a refresh token");
-        String username = jwtService.extractUsername(refreshToken);
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userRepository.findAll().stream()
+                .filter(u -> refreshToken.equals(u.getRefreshToken()))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestException("Invalid refresh token"));
         if (!user.isActive()) throw new BadRequestException("Account is inactive");
-        revokeToken(refreshToken);
-        return new AuthResponse(jwtService.generateAccessToken(user), jwtService.generateRefreshToken(user), user.getRole().name(), user.getId(), user.getUsername(), user.getEmail());
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+        user.setRefreshToken(newRefreshToken);
+        userRepository.save(user);
+        return new AuthResponse(jwtService.generateAccessToken(user), newRefreshToken, user.getRole().name(), user.getId(), user.getUsername(), user.getEmail());
     }
     public void logout(String bearerToken) {
         logout(bearerToken, null);
@@ -66,7 +75,13 @@ public class AuthService {
         String token = bearerToken.substring(7);
         revokeToken(token);
         if (refreshToken != null && !refreshToken.isBlank()) {
-            revokeToken(refreshToken);
+            userRepository.findAll().stream()
+                    .filter(u -> refreshToken.equals(u.getRefreshToken()))
+                    .findFirst()
+                    .ifPresent(u -> {
+                        u.setRefreshToken(null);
+                        userRepository.save(u);
+                    });
         }
     }
     public AuthResponse changePassword(String username, ChangePasswordRequest request) {
@@ -76,8 +91,15 @@ public class AuthService {
         userRepository.save(user);
         return new AuthResponse(null, null, user.getRole().name(), user.getId(), user.getUsername(), user.getEmail());
     }
+    public void forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new NotFoundException("Khong tim thay gmail da dang ky tai khoan"));
+        String otp = otpService.generate(user.getEmail());
+        mailService.sendOtp(user.getEmail(), otp);
+    }
+
     public void resetPassword(ResetPasswordRequest request) {
-        User user = userRepository.findByUsername(request.username()).orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userRepository.findByEmail(request.email()).orElseThrow(() -> new NotFoundException("Khong tim thay gmail da dang ky tai khoan"));
+        otpService.verify(request.email(), request.otp());
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
     }

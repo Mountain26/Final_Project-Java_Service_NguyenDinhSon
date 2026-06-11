@@ -9,7 +9,7 @@ public class Submission extends AuditAwareEntity {
     private Long id;
     @ManyToOne(optional = false) private Course course;
     @ManyToOne(optional = false) private User student;
-    @Column(nullable = false) private String reportUrl;
+    @Column(nullable = true) private String reportUrl;
     private Double score;
     @Column(length = 2000) private String feedback;
     @Enumerated(EnumType.STRING) @Column(nullable = false) private SubmissionStatus status = SubmissionStatus.PENDING;

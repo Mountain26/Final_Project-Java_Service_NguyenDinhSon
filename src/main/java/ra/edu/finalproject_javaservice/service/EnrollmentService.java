@@ -1,6 +1,7 @@
 package ra.edu.finalproject_javaservice.service;
 
 import org.springframework.stereotype.Service;
+import ra.edu.finalproject_javaservice.dto.CourseResponse;
 import ra.edu.finalproject_javaservice.dto.EnrollCourseRequest;
 import ra.edu.finalproject_javaservice.entity.Enrollment;
 import ra.edu.finalproject_javaservice.entity.Role;
@@ -33,5 +34,16 @@ public class EnrollmentService {
         enrollment.setStudent(student);
         enrollment.setCourse(courseRepository.findById(request.courseId()).orElseThrow(() -> new NotFoundException("Course not found")));
         enrollmentRepository.save(enrollment);
+    }
+
+    public java.util.List<CourseResponse> findMyCourses(String username) {
+        var student = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found"));
+        if (student.getRole() != Role.STUDENT) throw new ForbiddenException("Only student can view enrolled courses");
+        return enrollmentRepository.findByStudent_Id(student.getId()).stream()
+                .map(enrollment -> {
+                    var course = enrollment.getCourse();
+                    return new CourseResponse(course.getId(), course.getCourseCode(), course.getCourseName(), course.getCredit());
+                })
+                .toList();
     }
 }

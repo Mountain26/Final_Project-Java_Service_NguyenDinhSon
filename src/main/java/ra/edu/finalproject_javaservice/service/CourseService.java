@@ -2,9 +2,9 @@ package ra.edu.finalproject_javaservice.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import ra.edu.finalproject_javaservice.dto.CreateCourseRequest;
 import ra.edu.finalproject_javaservice.dto.CourseResponse;
 import ra.edu.finalproject_javaservice.dto.UpdateCourseRequest;
@@ -44,16 +44,16 @@ public class CourseService {
     }
     public Page<CourseResponse> findAll(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        List<CourseResponse> filtered = courseRepository.findAll().stream()
-                .filter(c -> keyword == null || keyword.isBlank()
-                        || c.getCourseCode().contains(keyword)
-                        || c.getCourseName().contains(keyword))
-                .map(c -> new CourseResponse(c.getId(), c.getCourseCode(), c.getCourseName(), c.getCredit()))
-                .toList();
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), filtered.size());
-        List<CourseResponse> content = start >= filtered.size() ? List.of() : filtered.subList(start, end);
-        return new PageImpl<>(content, pageable, filtered.size());
+        Specification<Course> spec = (root, query, cb) -> {
+            if (keyword == null || keyword.isBlank()) return cb.conjunction();
+            String like = "%" + keyword.toLowerCase() + "%";
+            return cb.or(
+                    cb.like(cb.lower(root.get("courseCode")), like),
+                    cb.like(cb.lower(root.get("courseName")), like)
+            );
+        };
+        Page<Course> coursesPage = courseRepository.findAll(spec, pageable);
+        return coursesPage.map(c -> new CourseResponse(c.getId(), c.getCourseCode(), c.getCourseName(), c.getCredit()));
     }
     public List<CourseResponse> findAll(String keyword) {
         Stream<Course> stream = courseRepository.findAll().stream();

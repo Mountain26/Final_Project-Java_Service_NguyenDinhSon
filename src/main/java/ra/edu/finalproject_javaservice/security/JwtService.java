@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -33,7 +34,7 @@ public class JwtService {
     }
 
     public String generateRefreshToken(User user) {
-        return buildToken(user, refreshDays, ChronoUnit.DAYS, "refresh");
+        return UUID.randomUUID().toString();
     }
 
     private String buildToken(User user, long value, ChronoUnit unit, String type) {
@@ -65,7 +66,11 @@ public class JwtService {
     }
 
     public boolean isValid(String token) {
-        Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-        return true;
+        try {
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }

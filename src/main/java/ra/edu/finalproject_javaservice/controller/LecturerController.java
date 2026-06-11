@@ -24,10 +24,6 @@ public class LecturerController {
     public ApiResponse<SubmissionResponse> grade(@Valid @RequestBody GradeRequest request) {
         return ApiResponse.ok("Graded successfully", submissionService.grade(request));
     }
-    @PutMapping("/submissions/{submissionId}/return")
-    public ApiResponse<SubmissionResponse> returnSubmission(@PathVariable Long submissionId, @RequestParam String feedback) {
-        return ApiResponse.ok("Returned successfully", submissionService.returnSubmission(submissionId, feedback));
-    }
     @GetMapping("/submissions/course/{courseId}")
     public ApiResponse<?> submissionsByCourse(@PathVariable Long courseId) {
         return ApiResponse.ok("Success", submissionService.findByCourse(courseId));

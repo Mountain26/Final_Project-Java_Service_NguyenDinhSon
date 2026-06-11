@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ra.edu.finalproject_javaservice.common.ApiResponse;
 import ra.edu.finalproject_javaservice.dto.EnrollCourseRequest;
+import ra.edu.finalproject_javaservice.dto.CourseResponse;
 import ra.edu.finalproject_javaservice.dto.SubmissionResponse;
 import ra.edu.finalproject_javaservice.service.EnrollmentService;
 import ra.edu.finalproject_javaservice.service.SubmissionService;
@@ -24,6 +25,12 @@ public class StudentController {
         String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
         enrollmentService.enroll(username, request);
         return ApiResponse.ok("Enrolled successfully", null);
+    }
+
+    @GetMapping("/courses/me")
+    public ApiResponse<java.util.List<CourseResponse>> myCourses() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        return ApiResponse.ok("Success", enrollmentService.findMyCourses(username));
     }
 
     @PostMapping(value = "/submissions/{submissionId}/upload", consumes = "multipart/form-data")

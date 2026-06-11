@@ -65,6 +65,11 @@ Base URL: `http://localhost:8080`
 - `keyword` tùy chọn
 - `page` mặc định `0`
 - `size` mặc định `10`
+- Link test:
+```http
+GET http://localhost:8080/api/v1/admin/users?keyword=nam&page=0&size=10
+Authorization: Bearer <access_token>
+```
 
 ### FR-05 - Cập nhật người dùng
 
@@ -108,6 +113,11 @@ Base URL: `http://localhost:8080`
 - `keyword` tùy chọn
 - `page` mặc định `0`
 - `size` mặc định `10`
+- Link test:
+```http
+GET http://localhost:8080/api/v1/admin/courses?keyword=JAVA&page=0&size=10
+Authorization: Bearer <access_token>
+```
 
 ### FR-05 - Cập nhật khóa học
 
@@ -141,6 +151,12 @@ Base URL: `http://localhost:8080`
 }
 ```
 
+### FR-06 - Xem các khóa học đã đăng ký
+
+- Method: `GET`
+- Path: `/api/v1/student/courses/me`
+- Quyền: `STUDENT`
+
 ## Day 2
 
 ### FR-01 - Đăng nhập
@@ -167,6 +183,7 @@ Base URL: `http://localhost:8080`
   "refreshToken": "your_refresh_token"
 }
 ```
+- Ghi chú: `refreshToken` là chuỗi UUID, chỉ dùng để xin `accessToken` mới. Không dùng `refreshToken` để truy cập các API `/api/v1/student/**`, `/api/v1/lecturer/**`, `/api/v1/admin/**`.
 
 ### FR-03 - Đăng xuất
 
@@ -189,7 +206,16 @@ Base URL: `http://localhost:8080`
 - Quyền: `STUDENT`
 - Content-Type: `multipart/form-data`
 - Form-data:
-- `file`
+  - `file`: file bài nộp, bắt buộc
+- Ghi chú: endpoint này chỉ dùng khi `submission` đã được tạo sẵn. Flow chính của dự án hiện tại là nộp theo `courseId`.
+- Link test:
+```http
+POST http://localhost:8080/api/v1/student/submissions/1/upload
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+
+file=<binary file>
+```
 
 ### FR-07 - Nộp bài theo file bằng courseId
 
@@ -198,7 +224,15 @@ Base URL: `http://localhost:8080`
 - Quyền: `STUDENT`
 - Content-Type: `multipart/form-data`
 - Form-data:
-- `file`
+  - `file`: file bài nộp, bắt buộc
+- Link test:
+```http
+POST http://localhost:8080/api/v1/student/courses/1/submissions/upload
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+
+file=<binary file>
+```
 
 ### FR-07 - Xem bài nộp của tôi
 
@@ -212,21 +246,21 @@ Base URL: `http://localhost:8080`
 - Path: `/api/v1/lecturer/grades`
 - Quyền: `LECTURER`
 - Body:
-```json
+  - `submissionId`: ID của bài nộp cần chấm
+  - `score`: điểm số từ `0` đến `100`
+  - `feedback`: nhận xét của giảng viên
+- Link test:
+```http
+POST http://localhost:8080/api/v1/lecturer/grades
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
 {
   "submissionId": 1,
   "score": 95,
   "feedback": "Good work"
 }
 ```
-
-### FR-08 - Trả bài
-
-- Method: `PUT`
-- Path: `/api/v1/lecturer/submissions/{submissionId}/return`
-- Quyền: `LECTURER`
-- Query:
-- `feedback` bắt buộc
 
 ### FR-08 - Danh sách bài nộp theo khóa học
 
@@ -239,18 +273,31 @@ Base URL: `http://localhost:8080`
 - Method: `POST`
 - Path: `/api/v1/lecturer/materials/upload`
 - Quyền: `LECTURER`
-- Query:
-- `courseId` bắt buộc
-- `materialName` bắt buộc
 - Content-Type: `multipart/form-data`
+- Query params:
+  - `courseId`: ID của khóa học cần gắn tài liệu vào, bắt buộc
+  - `materialName`: tên hiển thị của tài liệu, bắt buộc
 - Form-data:
-- `file`
+  - `file`: file tài liệu cần upload, bắt buộc
+- Link test:
+```http
+POST http://localhost:8080/api/v1/lecturer/materials/upload?courseId=1&materialName=Chapter%201
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+
+file=<binary file>
+```
 
 ### FR-09 - Danh sách tài liệu theo khóa học
 
 - Method: `GET`
 - Path: `/api/v1/lecturer/materials/course/{courseId}`
 - Quyền: `LECTURER`
+- Link test:
+```http
+GET http://localhost:8080/api/v1/lecturer/materials/course/1
+Authorization: Bearer <access_token>
+```
 
 ### FR-09 - Xóa tài liệu
 
@@ -271,7 +318,25 @@ Base URL: `http://localhost:8080`
 }
 ```
 
-### FR-10 - Quên / đặt lại mật khẩu
+### FR-10 - Quên mật khẩu
+
+- Method: `POST`
+- Path: `/api/v1/auth/forgot-password`
+- Quyền: Public
+- Body:
+```json
+{
+  "email": "student1@gmail.com"
+}
+```
+- Ghi chú: nếu email không tồn tại trong hê thống thì trả lỗi `Khong tim thay gmail da dang ky tai khoan`.
+- OTP:
+  - gửi về email đã đăng ký
+  - hết hạn sau 5 phút
+  - chỉ dùng 1 lần
+  - tối đa 3 lần nhập sai
+
+### FR-10 - Đặt lại mật khẩu bằng OTP
 
 - Method: `POST`
 - Path: `/api/v1/auth/reset-password`
@@ -279,7 +344,8 @@ Base URL: `http://localhost:8080`
 - Body:
 ```json
 {
-  "username": "student1",
+  "email": "student1@gmail.com",
+  "otp": "123456",
   "newPassword": "newpass123"
 }
 ```

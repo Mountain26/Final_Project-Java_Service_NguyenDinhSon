@@ -19,6 +19,8 @@ public class User extends AuditAwareEntity {
     private Role role;
     @Column(nullable = false)
     private boolean active = true;
+    @Column(length = 100, unique = true)
+    private String refreshToken;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -32,4 +34,6 @@ public class User extends AuditAwareEntity {
     public void setRole(Role role) { this.role = role; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+    public String getRefreshToken() { return refreshToken; }
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
 }

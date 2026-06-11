@@ -7,8 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ra.edu.finalproject_javaservice.dto.AuthResponse;
 import ra.edu.finalproject_javaservice.dto.AuthRequest;
+import ra.edu.finalproject_javaservice.dto.ForgotPasswordRequest;
 import ra.edu.finalproject_javaservice.dto.RefreshRequest;
 import ra.edu.finalproject_javaservice.dto.LogoutRequest;
+import ra.edu.finalproject_javaservice.dto.ResetPasswordRequest;
 import ra.edu.finalproject_javaservice.service.AuthService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,5 +45,19 @@ class AuthControllerTest {
         var response = authController.logout("Bearer access", new LogoutRequest("refresh"));
         assertTrue(response.success());
         verify(authService).logout("Bearer access", "refresh");
+    }
+
+    @Test
+    void forgotPasswordReturnsSuccess() {
+        var response = authController.forgotPassword(new ForgotPasswordRequest("u@mail.com"));
+        assertTrue(response.success());
+        verify(authService).forgotPassword(new ForgotPasswordRequest("u@mail.com"));
+    }
+
+    @Test
+    void resetPasswordReturnsSuccess() {
+        var response = authController.resetPassword(new ResetPasswordRequest("u@mail.com", "123456", "newPass"));
+        assertTrue(response.success());
+        verify(authService).resetPassword(new ResetPasswordRequest("u@mail.com", "123456", "newPass"));
     }
 }

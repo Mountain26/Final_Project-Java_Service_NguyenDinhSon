@@ -8,7 +8,6 @@ import ra.edu.finalproject_javaservice.dto.GradeRequest;
 import ra.edu.finalproject_javaservice.dto.SubmissionResponse;
 import ra.edu.finalproject_javaservice.entity.*;
 import ra.edu.finalproject_javaservice.exception.BadRequestException;
-import ra.edu.finalproject_javaservice.exception.ConflictException;
 import ra.edu.finalproject_javaservice.exception.NotFoundException;
 import ra.edu.finalproject_javaservice.repository.*;
 
@@ -61,16 +60,6 @@ public class SubmissionService {
         s.setScore(request.score());
         s.setFeedback(request.feedback());
         s.setStatus(SubmissionStatus.GRADED);
-        submissionRepository.save(s);
-        return toResponse(s);
-    }
-    public SubmissionResponse returnSubmission(Long submissionId, String feedback) {
-        Submission s = submissionRepository.findById(submissionId).orElseThrow(() -> new NotFoundException("Submission not found"));
-        if (s.getStatus() != SubmissionStatus.SUBMITTED && s.getStatus() != SubmissionStatus.GRADED && s.getStatus() != SubmissionStatus.LATE) {
-            throw new BadRequestException("Invalid state");
-        }
-        s.setFeedback(feedback);
-        s.setStatus(SubmissionStatus.RETURNED);
         submissionRepository.save(s);
         return toResponse(s);
     }
