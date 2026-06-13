@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 public class Submission extends AuditAwareEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne(optional = true)
+    private Assignment assignment;
     @ManyToOne(optional = false) private Course course;
     @ManyToOne(optional = false) private User student;
     @Column(nullable = true) private String reportUrl;
@@ -15,6 +17,8 @@ public class Submission extends AuditAwareEntity {
     @Enumerated(EnumType.STRING) @Column(nullable = false) private SubmissionStatus status = SubmissionStatus.PENDING;
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Assignment getAssignment() { return assignment; }
+    public void setAssignment(Assignment assignment) { this.assignment = assignment; }
     public Course getCourse() { return course; }
     public void setCourse(Course course) { this.course = course; }
     public User getStudent() { return student; }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import ra.edu.finalproject_javaservice.common.ApiResponse;
 import ra.edu.finalproject_javaservice.dto.GradeRequest;
 import ra.edu.finalproject_javaservice.dto.SubmissionResponse;
@@ -27,13 +28,13 @@ class LecturerControllerTest {
     @Test
     void submissionsByCourseReturnsServiceData() {
         SubmissionResponse response = new SubmissionResponse(1L, 10L, 20L, null, null, null, "PENDING");
-        when(submissionService.findByCourse(10L)).thenReturn(List.of(response));
+        when(submissionService.findByCourse(10L, 0, 10)).thenReturn(new PageImpl<>(List.of(response)));
 
-        ApiResponse<?> result = lecturerController.submissionsByCourse(10L);
+        ApiResponse<?> result = lecturerController.submissionsByCourse(10L, 0, 10);
 
         assertEquals("Success", result.message());
-        assertEquals(List.of(response), result.data());
-        verify(submissionService).findByCourse(10L);
+        assertEquals(List.of(response), ((org.springframework.data.domain.Page<?>) result.data()).getContent());
+        verify(submissionService).findByCourse(10L, 0, 10);
     }
 
     @Test

@@ -43,6 +43,9 @@ public class AdminService {
                 usersPage = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword, pageable);
             }
         }
+        if (keyword != null && !keyword.isBlank() && usersPage.isEmpty()) {
+            throw new NotFoundException("Không tìm thấy người dùng phù hợp với từ khóa '" + keyword + "'");
+        }
         return usersPage.map(u -> new UserResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRole().name(), u.isActive()));
     }
     public UserResponse createUser(CreateUserRequest request) {

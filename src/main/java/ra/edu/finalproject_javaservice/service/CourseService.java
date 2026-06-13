@@ -48,6 +48,9 @@ public class CourseService {
         Page<Course> coursesPage = (keyword == null || keyword.isBlank())
                 ? courseRepository.findAll(pageable)
                 : courseRepository.findByCourseCodeContainingIgnoreCaseOrCourseNameContainingIgnoreCase(keyword, keyword, pageable);
+        if (keyword != null && !keyword.isBlank() && coursesPage.isEmpty()) {
+            throw new NotFoundException("Không tìm thấy khóa học phù hợp với từ khóa '" + keyword + "'");
+        }
         return coursesPage.map(c -> new CourseResponse(c.getId(), c.getCourseCode(), c.getCourseName(), c.getCredit()));
     }
 }

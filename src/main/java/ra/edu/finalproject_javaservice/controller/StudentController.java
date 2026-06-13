@@ -1,6 +1,7 @@
 package ra.edu.finalproject_javaservice.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ra.edu.finalproject_javaservice.common.ApiResponse;
@@ -44,8 +45,9 @@ public class StudentController {
         return ApiResponse.ok("Uploaded successfully", submissionService.uploadForStudent(username, courseId, file));
     }
     @GetMapping("/submissions/me")
-    public ApiResponse<?> mySubmissions() {
+    public ApiResponse<Page<SubmissionResponse>> mySubmissions(@RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size) {
         String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-        return ApiResponse.ok("Success", submissionService.findByUsername(username));
+        return ApiResponse.ok("Success", submissionService.findByUsername(username, page, size));
     }
 }

@@ -46,4 +46,10 @@ public class EnrollmentService {
                 })
                 .toList();
     }
+
+    public boolean isStudentEnrolled(String username, Long courseId) {
+        var student = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found"));
+        if (student.getRole() != Role.STUDENT) throw new ForbiddenException("Only student can access this feature");
+        return enrollmentRepository.existsByStudent_IdAndCourse_Id(student.getId(), courseId);
+    }
 }

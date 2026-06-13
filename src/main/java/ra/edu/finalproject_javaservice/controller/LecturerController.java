@@ -1,6 +1,7 @@
 package ra.edu.finalproject_javaservice.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ra.edu.finalproject_javaservice.common.ApiResponse;
@@ -15,6 +16,7 @@ import ra.edu.finalproject_javaservice.service.SubmissionService;
 public class LecturerController {
     private final SubmissionService submissionService;
     private final MaterialService materialService;
+
     public LecturerController(SubmissionService submissionService, MaterialService materialService) {
         this.submissionService = submissionService;
         this.materialService = materialService;
@@ -24,19 +26,27 @@ public class LecturerController {
     public ApiResponse<SubmissionResponse> grade(@Valid @RequestBody GradeRequest request) {
         return ApiResponse.ok("Graded successfully", submissionService.grade(request));
     }
+
     @GetMapping("/submissions/course/{courseId}")
-    public ApiResponse<?> submissionsByCourse(@PathVariable Long courseId) {
-        return ApiResponse.ok("Success", submissionService.findByCourse(courseId));
+    public ApiResponse<Page<SubmissionResponse>> submissionsByCourse(@PathVariable Long courseId,
+                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.ok("Success", submissionService.findByCourse(courseId, page, size));
     }
 
     @PostMapping(value = "/materials/upload", consumes = "multipart/form-data")
     public ApiResponse<MaterialResponse> uploadMaterial(@RequestParam Long courseId, @RequestParam String materialName, @RequestPart MultipartFile file) {
         return ApiResponse.ok("Uploaded successfully", materialService.upload(courseId, materialName, file));
     }
+
     @GetMapping("/materials/course/{courseId}")
     public ApiResponse<?> materialsByCourse(@PathVariable Long courseId) {
         return ApiResponse.ok("Success", materialService.findByCourse(courseId));
     }
+
     @DeleteMapping("/materials/{id}")
-    public ApiResponse<Void> deleteMaterial(@PathVariable Long id) { materialService.delete(id); return ApiResponse.ok("Deleted", null); }
+    public ApiResponse<Void> deleteMaterial(@PathVariable Long id) {
+        materialService.delete(id);
+        return ApiResponse.ok("Deleted", null);
+    }
 }
