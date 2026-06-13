@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
+    boolean existsByStudent_Id(Long studentId);
     List<Submission> findByStudent_Id(Long studentId);
     java.util.Optional<Submission> findByStudent_IdAndCourse_IdAndStatusNot(Long studentId, Long courseId, SubmissionStatus status);
     List<Submission> findByStatus(SubmissionStatus status);

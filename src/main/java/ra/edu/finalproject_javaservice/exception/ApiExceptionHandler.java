@@ -1,5 +1,6 @@
 package ra.edu.finalproject_javaservice.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import ra.edu.finalproject_javaservice.common.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,14 @@ public class ApiExceptionHandler {
     @ExceptionHandler(ServiceUnavailableException.class)
     public ResponseEntity<ApiResponse<Void>> handleUnavailable(ServiceUnavailableException ex) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ApiResponse.fail(ex.getMessage(), List.of(ex.getMessage())));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataIntegrity(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ApiResponse.fail("Operation failed because related data still exists or the value is duplicated",
+                        List.of("The data cannot be saved or deleted due to database constraints"))
+        );
     }
 
     @ExceptionHandler(RuntimeException.class)

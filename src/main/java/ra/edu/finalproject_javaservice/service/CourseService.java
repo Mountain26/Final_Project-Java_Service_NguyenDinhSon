@@ -12,8 +12,6 @@ import ra.edu.finalproject_javaservice.exception.ConflictException;
 import ra.edu.finalproject_javaservice.exception.NotFoundException;
 import ra.edu.finalproject_javaservice.repository.CourseRepository;
 
-import java.util.List;
-
 @Service
 public class CourseService {
     private final CourseRepository courseRepository;
@@ -29,29 +27,27 @@ public class CourseService {
     }
     public CourseResponse update(Long id, UpdateCourseRequest request) {
         Course c = courseRepository.findById(id).orElseThrow(() -> new NotFoundException("Course not found"));
-        c.setCourseCode(request.courseCode());
-        c.setCourseName(request.courseName());
-        c.setCredit(request.credit());
+        if (request.courseCode() != null && !request.courseCode().isBlank()) {
+            if (!request.courseCode().equals(c.getCourseCode()) && courseRepository.existsByCourseCode(request.courseCode())) {
+                throw new ConflictException("Course code already exists");
+            }
+            c.setCourseCode(request.courseCode());
+        }
+        if (request.courseName() != null && !request.courseName().isBlank()) {
+            c.setCourseName(request.courseName());
+        }
+        if (request.credit() != null) {
+            c.setCredit(request.credit());
+        }
         c = courseRepository.save(c);
         return new CourseResponse(c.getId(), c.getCourseCode(), c.getCourseName(), c.getCredit());
     }
     public void delete(Long id) { courseRepository.deleteById(id); }
-    public List<CourseResponse> findAll() {
-        return courseRepository.findAll().stream().map(c -> new CourseResponse(c.getId(), c.getCourseCode(), c.getCourseName(), c.getCredit())).toList();
-    }
     public Page<CourseResponse> findAll(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Course> coursesPage = (keyword == null || keyword.isBlank())
                 ? courseRepository.findAll(pageable)
                 : courseRepository.findByCourseCodeContainingIgnoreCaseOrCourseNameContainingIgnoreCase(keyword, keyword, pageable);
         return coursesPage.map(c -> new CourseResponse(c.getId(), c.getCourseCode(), c.getCourseName(), c.getCredit()));
-    }
-    public List<CourseResponse> findAll(String keyword) {
-        return (keyword == null || keyword.isBlank()
-                ? courseRepository.findAll()
-                : courseRepository.findByCourseCodeContainingIgnoreCaseOrCourseNameContainingIgnoreCase(keyword, keyword))
-                .stream()
-                .map(c -> new CourseResponse(c.getId(), c.getCourseCode(), c.getCourseName(), c.getCredit()))
-                .toList();
     }
 }

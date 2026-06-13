@@ -29,7 +29,7 @@ public class SubmissionService {
         s.setCourse(courseRepository.findById(request.courseId()).orElseThrow(() -> new NotFoundException("Course not found")));
         s.setStudent(userRepository.findById(request.studentId()).orElseThrow(() -> new NotFoundException("Student not found")));
         if (!enrollmentRepository.existsByStudent_IdAndCourse_Id(request.studentId(), request.courseId())) {
-            throw new BadRequestException("Student is not enrolled in this course");
+            throw new BadRequestException("Student has not registered for this course");
         }
         s.setReportUrl(null);
         s.setStatus(SubmissionStatus.PENDING);
@@ -40,7 +40,7 @@ public class SubmissionService {
     public SubmissionResponse uploadForStudent(String username, Long courseId, MultipartFile file) {
         var student = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found"));
         if (!enrollmentRepository.existsByStudent_IdAndCourse_Id(student.getId(), courseId)) {
-            throw new BadRequestException("Student is not enrolled in this course");
+            throw new BadRequestException("You have not registered for this course, so you cannot submit an assignment here");
         }
         Submission submission = submissionRepository.findByStudent_IdAndCourse_IdAndStatusNot(student.getId(), courseId, SubmissionStatus.GRADED)
                 .orElseGet(() -> {

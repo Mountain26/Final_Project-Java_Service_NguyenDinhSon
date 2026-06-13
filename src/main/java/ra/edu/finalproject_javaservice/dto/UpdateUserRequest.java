@@ -1,6 +1,3 @@
 package ra.edu.finalproject_javaservice.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-
-public record UpdateUserRequest(@NotBlank String email, boolean active) {}
+public record UpdateUserRequest(String username, String password, String email, String role, Boolean active) {}
